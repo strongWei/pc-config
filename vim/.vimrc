@@ -8,5 +8,13 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+" Emeet-vim
+Plugin 'mattn/emmet-vim'
+
 call vundle#end()            " required
 filetype plugin indent on    " required
+
+" Plugin Emmet-vim config
+let g:user_emmet_install_global = 0
+" also support JSX
+autocmd FileType html,css,javascript EmmetInstall
