@@ -6,4 +6,11 @@ git submodule update --init --recursive
 
 cDir=`pwd`
 
-bin/bash ${cDir}/vim/install.sh
+# install submodule vim
+vimDir = ${cDir}/vim
+ln -s ${vimDir}/.vimrc $HOME/.vimrc
+ln -s ${vimDir}/.vim   $HOME/.vim
+
+
+
+
