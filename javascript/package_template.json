@@ -1,0 +1,20 @@
+{
+  "name": "javascript",
+  "version": "1.0.0",
+  "description": "hello",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server -d --port=8082 --progress --colors",
+    "deploy": "NODE_ENV=production webpack -p"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@ssh"
+  },
+  "keywords": [
+    "key",
+    "world"
+  ],
+  "author": "strong",
+  "license": "GPL-3.0-or-later"
+}

@@ -12,5 +12,8 @@ ln -s ${vimDir}/.vimrc $HOME/.vimrc
 ln -s ${vimDir}/.vim   $HOME/.vim
 
 
-
+# install es-lint
+npm install -g es-lint
+## react
+npm install -g eslint-plugin-react
 

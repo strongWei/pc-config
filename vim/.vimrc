@@ -60,14 +60,6 @@ set expandtab   " 由空格代替制表符，`tabstop`定义几个空格
 set tabstop=4	
 set shiftwidth=4 " Normal下，`<<`或`>>' 移动多少个空格
 
-" - automatic completion  `}` `]` `)` `'` `"`
-" inoremap { {<CR>}<ESC>O
-" inoremap {{ {}<ESC>i
-" inoremap [ []<ESC>i
-" inoremap ( ()<ESC>i
-" inoremap ' ''<ESC>i
-" inoremap " ""<ESC>i
-
 " - omnifunc complete
 "inoremap <C-x> <C-X><C-O>
 
@@ -100,6 +92,9 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
+" - js
+let g:syntastic_javascript_checkers = ['eslint']
+
 " - html
 let g:syntastic_html_checkers = ['htmlhint'] 
 
@@ -117,7 +112,7 @@ let g:syntastic_python_python_exec = '/usr/bin/python3'
 "	\ 'cpp': 1
 "	\}
 " - c++ complete config 
-let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = '~/.vim/config/ycm_global_ycm_extra_conf'
 
 " - php complete config
 " autocmd FileType php inoremap <C-L> <C-X><C-O>
