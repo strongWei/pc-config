@@ -40,6 +40,12 @@ filetype plugin indent on    " required
 " basic
 set nu
 
+" - recoginze file extends .ts
+autocmd BufNewFile,BufRead *.tsx call ConfigTSX()
+fun ConfigTSX()
+  setf javascript
+  set tabstop=2
+endfun 
 
 " - status
 set laststatus=2
@@ -61,7 +67,7 @@ set tabstop=4
 set shiftwidth=4 " Normal下，`<<`或`>>' 移动多少个空格
 
 " - omnifunc complete
-"inoremap <C-x> <C-X><C-O>
+inoremap <C-x> <C-X><C-O>
 
 " - esc
 inoremap jk <ESC>
@@ -77,10 +83,12 @@ nnoremap <leader>+ <C-w>5+
 nnoremap <leader>- <C-w>5-
 nnoremap <leader>f :CtrlP
 
+
 " emmet configure
 let g:user_emmet_install_global = 0
+let g:user_emmet_mode='i' 
 " add JSX support
-autocmd FileType html,css,javascript EmmetInstall
+autocmd FileType html,css,less,javascript EmmetInstall
 
 " syntastic
 set statusline+=%#warningmsg#
@@ -95,8 +103,10 @@ let g:syntastic_check_on_wq = 0
 " - js
 let g:syntastic_javascript_checkers = ['eslint']
 
-" - html
-let g:syntastic_html_checkers = ['htmlhint'] 
+let g:syntastic_html_checkers = ['stylelint']
+let g:syntastic_css_checkers = ['stylelint']
+let g:syntastic_less_checkers = ['stylelint']
+
 
 " - py
 let g:syntastic_python_checkers = ['python']
@@ -107,6 +117,8 @@ let g:syntastic_python_python_exec = '/usr/bin/python3'
 " let g:syntastic_cpp_compiler_options = '-std=c++11'
 
 " youcompleteme
+" - basic setting
+let g:ycm_autoclose_preview_window_after_completion = 1
 " - ignore filetype
 " let g:ycm_filetype_specific_completion_to_disable = {
 "	\ 'cpp': 1
@@ -117,6 +129,7 @@ let g:ycm_global_ycm_extra_conf = '~/.vim/config/ycm_global_ycm_extra_conf'
 " - php complete config
 " autocmd FileType php inoremap <C-L> <C-X><C-O>
 
+" YouCompleteMe
 " - subcommand
 nnoremap <leader>gd :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>jd :YcmCompleter GoToDeclaration<CR>
@@ -145,5 +158,13 @@ let Tlist_Process_File_Always=1
 
 " git: fugitive
 "
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+"" YouCompleteMe
+
+" css/less setting
+" YouCompleteMe
+autocmd FileType css,less call ConfigCss()
+fun ConfigCss()
+  set omnifunc=csscomplete#CompleteCSS 
+  set tabstop=2
+endfun
 
