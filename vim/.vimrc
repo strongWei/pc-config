@@ -40,21 +40,15 @@ filetype plugin indent on    " required
 " basic
 set nu
 
-" - recoginze file extends .ts
-autocmd BufNewFile,BufRead *.tsx call ConfigTSX()
-fun ConfigTSX()
-  setf javascript
-  set tabstop=2
-endfun 
 
 " - status
 set laststatus=2
 highlight StatusLine cterm=bold ctermfg=black ctermbg=green
 " 获取当前路径，将$HOME转化为~
-function! CurDir()
-        let curdir = substitute(getcwd(), $HOME, "~", "g")
-        return curdir
-endfunction
+func! CurDir()
+  let curdir = substitute(getcwd(), $HOME, "~", "g")
+  return curdir
+endfun
 set statusline=%{FugitiveStatusline()}[%F]%y%r%m%*%=[Line:%l/%L,Column:%c][%p%%] "显示文件名：总行数，总的字符数
 
 " - indent 
@@ -88,7 +82,7 @@ nnoremap <leader>f :CtrlP
 let g:user_emmet_install_global = 0
 let g:user_emmet_mode='i' 
 " add JSX support
-autocmd FileType html,css,less,javascript EmmetInstall
+autocmd FileType html,css,less,javascript,php EmmetInstall
 
 " syntastic
 set statusline+=%#warningmsg#
@@ -165,6 +159,22 @@ let Tlist_Process_File_Always=1
 autocmd FileType css,less call ConfigCss()
 fun ConfigCss()
   set omnifunc=csscomplete#CompleteCSS 
-  set tabstop=2
 endfun
 
+" yaml setting
+autocmd FileType yaml call ConfigYaml()
+fun ConfigYaml()
+  set autoindent
+endfun
+
+" - recoginze file extends .ts
+autocmd BufNewFile,BufRead *.tsx call ConfigTSX()
+fun ConfigTSX()
+  setf javascript
+endfun 
+
+autocmd FileType css,less,sh,yaml,javascript call ConfigTab()
+fun ConfigTab()
+  set tabstop=2
+  set shiftwidth=2
+endfun

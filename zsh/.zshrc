@@ -23,3 +23,20 @@ export NVM_DIR="$HOME/.nvm"
 
 YARN_DIR="$HOME/.yarn"
 export PATH=$PATH:$YARN_DIR/bin
+
+composer () {
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --interactive \
+        --rm \
+        --user $(id -u):$(id -g) \
+        --volume /etc/passwd:/etc/passwd:ro \
+        --volume /etc/group:/etc/group:ro \
+        --volume $(pwd):/app \
+        --volume $HOME/composer:/tmp \
+        composer "$@"
+}
+
+
