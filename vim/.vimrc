@@ -15,7 +15,7 @@ Plugin 'mattn/emmet-vim'
 Plugin 'suan/vim-instant-markdown'
 
 " syntastic
-Plugin 'vim-syntastic/syntastic'
+" Plugin 'vim-syntastic/syntastic'
 
 " YouCompleteMe
 Plugin 'Valloric/YouCompleteMe'
@@ -61,7 +61,7 @@ set tabstop=4
 set shiftwidth=4 " Normal下，`<<`或`>>' 移动多少个空格
 
 " - omnifunc complete
-inoremap <C-x> <C-X><C-O>
+"inoremap <C-x> <C-X><C-O>
 
 " - esc
 inoremap jk <ESC>
@@ -85,26 +85,26 @@ let g:user_emmet_mode='i'
 autocmd FileType html,css,less,javascript,php EmmetInstall
 
 " syntastic
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
 
 " - js
-let g:syntastic_javascript_checkers = ['eslint']
+"let g:syntastic_javascript_checkers = ['eslint']
 
-let g:syntastic_html_checkers = ['stylelint']
-let g:syntastic_css_checkers = ['stylelint']
-let g:syntastic_less_checkers = ['stylelint']
+" let g:syntastic_html_checkers = ['stylelint']
+" let g:syntastic_css_checkers = ['stylelint']
+" let g:syntastic_less_checkers = ['stylelint']
 
 
 " - py
-let g:syntastic_python_checkers = ['python']
-let g:syntastic_python_python_exec = '/usr/bin/python3'
+" let g:syntastic_python_checkers = ['python']
+" let g:syntastic_python_python_exec = '/usr/bin/python3'
 " - c++
 " let g:syntastic_cpp_checkers = ['gcc']
 " let g:syntastic_cpp_compiler = 'gcc'
@@ -178,3 +178,6 @@ fun ConfigTab()
   set tabstop=2
   set shiftwidth=2
 endfun
+
+" php setting
+set tags+=tags.vendor

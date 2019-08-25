@@ -1,0 +1,16 @@
+# version: 5.5
+# require: php >= 7.0.0 
+#          openssl
+#          pdo
+#          Mbstring
+#          Tokenizer
+#          Xml
+
+# install
+composer create-project --perfer-dist laravel/laravel xxx 5.5.*
+
+# notice
+# privilege: stroage and boostrap/cache 755
+chmod -R +w stroage
+chmod -R +w bootstrap/cache
+
