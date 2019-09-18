@@ -16,14 +16,15 @@ set -e
 #
 # Git commit from https://github.com/docker/docker-install when
 # the script was uploaded (Should only be modified by upload job):
-SCRIPT_COMMIT_SHA=4957679
+SCRIPT_COMMIT_SHA="6bf300318ebaab958c4adc341a8c7bb9f3a54a1a"
 
 
-# This value will automatically get changed for:
-#   * edge
+# The channel to install from:
+#   * nightly
 #   * test
-#   * experimental
-DEFAULT_CHANNEL_VALUE="edge"
+#   * stable
+#   * edge (deprecated)
+DEFAULT_CHANNEL_VALUE="stable"
 if [ -z "$CHANNEL" ]; then
 	CHANNEL=$DEFAULT_CHANNEL_VALUE
 fi
@@ -37,45 +38,6 @@ DEFAULT_REPO_FILE="docker-ce.repo"
 if [ -z "$REPO_FILE" ]; then
 	REPO_FILE="$DEFAULT_REPO_FILE"
 fi
-
-SUPPORT_MAP="
-x86_64-centos-7
-x86_64-fedora-28
-x86_64-fedora-29
-x86_64-debian-jessie
-x86_64-debian-stretch
-x86_64-debian-buster
-x86_64-ubuntu-trusty
-x86_64-ubuntu-xenial
-x86_64-ubuntu-bionic
-x86_64-ubuntu-cosmic
-s390x-ubuntu-xenial
-s390x-ubuntu-bionic
-s390x-ubuntu-cosmic
-ppc64le-ubuntu-xenial
-ppc64le-ubuntu-bionic
-ppc64le-ubuntu-cosmic
-aarch64-ubuntu-xenial
-aarch64-ubuntu-bionic
-aarch64-ubuntu-cosmic
-aarch64-debian-jessie
-aarch64-debian-stretch
-aarch64-debian-buster
-aarch64-fedora-28
-aarch64-fedora-29
-aarch64-centos-7
-armv6l-raspbian-jessie
-armv7l-raspbian-jessie
-armv6l-raspbian-stretch
-armv7l-raspbian-stretch
-armv7l-debian-jessie
-armv7l-debian-stretch
-armv7l-debian-buster
-armv7l-ubuntu-trusty
-armv7l-ubuntu-xenial
-armv7l-ubuntu-bionic
-armv7l-ubuntu-cosmic
-"
 
 mirror=''
 DRY_RUN=${DRY_RUN:-}
@@ -211,6 +173,9 @@ check_forked() {
 				fi
 				dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
 				case "$dist_version" in
+					10)
+						dist_version="buster"
+					;;
 					9)
 						dist_version="stretch"
 					;;
@@ -329,6 +294,9 @@ do_install() {
 		debian|raspbian)
 			dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
 			case "$dist_version" in
+				10)
+					dist_version="buster"
+				;;
 				9)
 					dist_version="stretch"
 				;;
@@ -363,20 +331,6 @@ do_install() {
 	# Check if this is a forked Linux distro
 	check_forked
 
-	# Check if we actually support this configuration
-	if ! echo "$SUPPORT_MAP" | grep "$(uname -m)-$lsb_dist-$dist_version" >/dev/null; then
-		cat >&2 <<-'EOF'
-
-		Either your platform is not easily detectable or is not supported by this
-		installer script.
-		Please visit the following URL for more detailed installation instructions:
-
-		https://docs.docker.com/engine/installation/
-
-		EOF
-		exit 1
-	fi
-
 	# Run setup for each distro accordingly
 	case "$lsb_dist" in
 		ubuntu|debian|raspbian)
@@ -409,7 +363,7 @@ do_install() {
 				else
 					# Will work for incomplete versions IE (17.12), but may not actually grab the "latest" if in the test channel
 					pkg_pattern="$(echo "$VERSION" | sed "s/-ce-/~ce~.*/g" | sed "s/-/.*/g").*-0~$lsb_dist"
-					search_command="apt-cache madison 'docker-ce' | grep '$pkg_pattern' | head -1 | cut -d' ' -f 4"
+					search_command="apt-cache madison 'docker-ce' | grep '$pkg_pattern' | head -1 | awk '{\$1=\$1};1' | cut -d' ' -f 3"
 					pkg_version="$($sh_c "$search_command")"
 					echo "INFO: Searching repository for VERSION '$VERSION'"
 					echo "INFO: $search_command"
@@ -419,12 +373,18 @@ do_install() {
 						echo
 						exit 1
 					fi
+					search_command="apt-cache madison 'docker-ce-cli' | grep '$pkg_pattern' | head -1 | awk '{\$1=\$1};1' | cut -d' ' -f 3"
+					# Don't insert an = for cli_pkg_version, we'll just include it later
+					cli_pkg_version="$($sh_c "$search_command")"
 					pkg_version="=$pkg_version"
 				fi
 			fi
 			(
 				if ! is_dry_run; then
 					set -x
+				fi
+				if [ -n "$cli_pkg_version" ]; then
+					$sh_c "apt-get install -y -qq --no-install-recommends docker-ce-cli=$cli_pkg_version >/dev/null"
 				fi
 				$sh_c "apt-get install -y -qq --no-install-recommends docker-ce$pkg_version >/dev/null"
 			)
@@ -438,11 +398,6 @@ do_install() {
 				exit 1
 			fi
 			if [ "$lsb_dist" = "fedora" ]; then
-				if [ "$dist_version" -lt "28" ]; then
-					echo "Error: Only Fedora >=28 is supported"
-					exit 1
-				fi
-
 				pkg_manager="dnf"
 				config_manager="dnf config-manager"
 				enable_channel_flag="--set-enabled"
@@ -486,6 +441,9 @@ do_install() {
 						echo
 						exit 1
 					fi
+					search_command="$pkg_manager list --showduplicates 'docker-ce-cli' | grep '$pkg_pattern' | tail -1 | awk '{print \$2}'"
+					# It's okay for cli_pkg_version to be blank, since older versions don't support a cli package
+					cli_pkg_version="$($sh_c "$search_command" | cut -d':' -f 2)"
 					# Cut out the epoch and prefix with a '-'
 					pkg_version="-$(echo "$pkg_version" | cut -d':' -f 2)"
 				fi
@@ -494,10 +452,20 @@ do_install() {
 				if ! is_dry_run; then
 					set -x
 				fi
+				# install the correct cli version first
+				if [ -n "$cli_pkg_version" ]; then
+					$sh_c "$pkg_manager install -y -q docker-ce-cli-$cli_pkg_version"
+				fi
 				$sh_c "$pkg_manager install -y -q docker-ce$pkg_version"
 			)
 			echo_docker_as_nonroot
 			exit 0
+			;;
+		*)
+			echo
+			echo "ERROR: Unsupported distribution '$lsb_dist'"
+			echo
+			exit 1
 			;;
 	esac
 	exit 1
