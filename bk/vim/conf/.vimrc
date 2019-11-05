@@ -15,7 +15,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 " php completer
-Plugin 'shawncplus/phpcomplete.vim'
+" Plugin 'shawncplus/phpcomplete.vim'
 
 " taglist
 Plugin 'taglist.vim'
@@ -29,6 +29,16 @@ Plugin 'arnaud-lb/vim-php-namespace'
 
 " ctrlp
 Plugin 'ctrlpvim/ctrlp.vim'
+
+" deopplete: other complete
+Plugin 'roxma/nvim-yarp'
+Plugin 'roxma/vim-hug-neovim-rpc'
+Plugin 'shougo/deoplete.nvim'
+" php complete
+Plugin 'lvht/phpcd.vim'
+
+" color theme
+Plugin 'christophermca/meta5' 
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -44,6 +54,11 @@ let mapleader=','
 set mouse=n
 
 set completeopt=longest,menuone "omid 自动补全窗口设置
+
+" startup deoplete
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#ignore_sources = get(g:, 'deoplete#ignore_sources', {})
+let g:deoplete#ignore_sources.php = ['omni']
 
 " --------------------------------------
 " ------ NerdTree Required ---------------
@@ -100,19 +115,19 @@ endfunction
 
 function s:key_map()
     " php-complete
-    inoremap <Leader>a : <C-x><C-o>
+    "inoremap <Leader>a : <C-x><C-o>
 
     " taglist
     nnoremap <silent> <F8> :TlistToggle<CR>
 
     " vim-php-namespace
-    inoremap <Leader>u <Esc>:call IPhpInsertUse()<CR>
     noremap <Leader>u :call PhpInsertUse()<CR>
+    noremap <Leader>e :call PhpExpandClass()<CR>
 endfunction
 
 function s:taglist_env_init()
-    set tags+=tags.vendor
-    autocmd BufWritePost *.php silent execute "!ctags" 
+    set tags+=tags,tags.vendor
+    "autocmd BufWritePost *.php silent execute "!ctags" 
 
     "自动更新taglist
     let Tlist_Auto_Update=1
@@ -133,10 +148,6 @@ function s:taglist_env_init()
     let Tlist_Inc_Winwidth=0
 endfunction
 
-function IPhpInsertUse()
-    call PhpInsertUse()
-    call feedkeys('a',  'n')
-endfunction
 "
 " - ------ PHP End      ---------------
 " --------------------------------------
