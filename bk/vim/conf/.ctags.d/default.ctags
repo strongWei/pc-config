@@ -2,5 +2,6 @@
 --languages=php
 --php-kinds=ctif
 --exclude=*test*
---exclude=vendor/*/vendor
+--exclude=vendor/*
+--exclude=thinkphp/*
 --fields=+aimS

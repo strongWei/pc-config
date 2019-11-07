@@ -37,8 +37,8 @@ Plugin 'shougo/deoplete.nvim'
 " python complete
 Plugin 'deoplete-plugins/deoplete-jedi'
 " php complete: bug!!
-" Plugin 'lvht/phpcd.vim'
-" Plugin 'padawan-php/deoplete-padawan'
+"Plugin 'lvht/phpcd.vim'
+Plugin 'padawan-php/deoplete-padawan'
 
 " git wrapper
 Plugin 'tpope/vim-fugitive'
@@ -64,6 +64,7 @@ set mouse=n
 inoremap jj <ESC>
 
 set completeopt=longest,menuone "omid 自动补全窗口设置
+set tags+=tags.vendor
 "自动更新taglist
 let Tlist_Auto_Update=1
 "设置taglist宽度
@@ -186,12 +187,12 @@ function s:key_map()
 endfunction
 
 function s:syntastic_env_init()
-    let g:syntastic_php_checkers = ['phpstan']
+    let g:syntastic_php_checkers = ['php']
 endfunction
 
 function s:taglist_env_init()
     set tags+=tags.vendor
-    autocmd BufWritePost *.php silent execute "!ctags application" 
+    autocmd BufWritePost *.php silent execute "!ctags" 
 endfunction
 
 "
