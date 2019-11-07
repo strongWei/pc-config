@@ -7,20 +7,22 @@
 # @file   ctags.sh
 
 #export PATH=
-curDir=`dirname $0`
 
-sudo apt install -y  build-essential git autoconf pkg-config
+curDir=`getCurDir`
+
+sudo apt install -y  build-essential git autoconf automake pkg-config
 
 lib=${curDir}/libs
 ctagIDir=/usr/local/universal-ctags
 
+[ -d "${ctagIDir}" ] && rm -rf ${ctagIDir}
 [ -d "${lib}" ] || mkdir -p ${lib}
 
 #install
 git clone https://github.com/universal-ctags/ctags ${lib}/ctags
 
 cd ${lib}/ctags
-./autogen.sh && ./configure --prefix=${ctagDir} && make -j8 && sudo make install
+./autogen.sh && ./configure --prefix=${ctagIDir} && make -j8 && sudo make install
 
 #add link
 link=/usr/local/bin/ctags
@@ -30,5 +32,5 @@ sudo ln -s ${ctagIDir}/bin/ctags ${link}
 #config link
 ctagConf=~/.ctags.d
 conf=${curDir}/conf
-[ -d "${ctagConf}" ] && rm -rf ${ctagConf}
+[ -d "${ctagConf}" -o -L "${ctagConf}" ] && rm -rf ${ctagConf}
 ln -s ${conf}/.ctags.d  ${ctagConf}
